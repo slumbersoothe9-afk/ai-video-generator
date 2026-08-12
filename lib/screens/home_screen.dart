@@ -16,6 +16,9 @@ import '../utils/prediction_engine.dart';
 import '../widgets/buttons.dart';
 import '../widgets/cards.dart';
 import '../widgets/feedback.dart';
+import 'about_us_screen.dart';
+import 'contact_us_screen.dart';
+import 'privacy_policy_screen.dart';
 import 'referral_screen.dart';
 import 'result_screen.dart';
 import 'subscription_screen.dart';
@@ -243,6 +246,47 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     await context.read<AuthService>().logout();
   }
 
+  void _showMenu() {
+    Haptics.tap();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('More', style: AppText.heading.copyWith(fontSize: 20)),
+            const SizedBox(height: AppSpacing.lg),
+            _menuTile(Icons.info_outline, 'About Us', () => _push(const AboutUsScreen())),
+            _menuTile(Icons.privacy_tip_outlined, 'Privacy Policy', () => _push(const PrivacyPolicyScreen())),
+            _menuTile(Icons.mail_outline, 'Contact Us', () => _push(const ContactUsScreen())),
+            const SizedBox(height: AppSpacing.md),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _menuTile(IconData icon, String label, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.accent),
+      title: Text(label, style: AppText.body),
+      trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+      onTap: () {
+        Navigator.of(context).pop();
+        onTap();
+      },
+    );
+  }
+
+  void _push(Widget screen) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
+  }
+
   void _goToReferrals() {
     Haptics.tap();
     Navigator.of(context).push(
@@ -375,6 +419,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           CreditPill(balance: balance, onTap: _goToSubscription),
+          const SizedBox(width: AppSpacing.sm),
+          GlassIconButton(
+            icon: Icons.menu_rounded,
+            onPressed: _showMenu,
+          ),
           const SizedBox(width: AppSpacing.sm),
           GlassIconButton(
             icon: Icons.logout_rounded,
